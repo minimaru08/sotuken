@@ -26,3 +26,9 @@
 # OS
 .DS_Store
 Thumbs.db
+
+# Unity build artifacts
+/.utmp/
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+UpgradeLog.htm
