@@ -3,7 +3,7 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     [SerializeField] float knockForce = 1.5f;   // ì|Ç∑óÕ
-    [SerializeField] float despawnDelay = 4f;   // ì|ÇÍÇƒÇ©ÇÁè¡Ç¶ÇÈÇ‹Ç≈(0Ç≈è¡Ç≥Ç»Ç¢)
+    [SerializeField] float despawnDelay = 1.5f;   // ì|ÇÍÇƒÇ©ÇÁè¡Ç¶ÇÈÇ‹Ç≈(0Ç≈è¡Ç≥Ç»Ç¢)
 
     Rigidbody rb;
     bool isDown;
