@@ -3,10 +3,19 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     [SerializeField] float knockForce = 1.5f;   // 倒す力
-    [SerializeField] float despawnDelay = 4f;   // 倒れてから消えるまで(0で消さない)
+    [SerializeField] float despawnDelay = 1.5f;   // 倒れてから消えるまで(0で消さない)
 
     Rigidbody rb;
     bool isDown;
+
+    // 倒れたことを知らせる放送。誰でも購読できる。
+    // static なので「このクラスの的が倒れた」という一本の窓口になる
+    public static event System.Action<Target> OnDown;
+
+    [SerializeField] int scoreValue = 100;   // この的を倒したときの点数
+
+    // 外から点数を読めるようにする(書き換えはさせない)
+    public int ScoreValue => scoreValue;
 
     void Awake()
     {
@@ -21,6 +30,7 @@ public class Target : MonoBehaviour
         if (collision.collider.GetComponentInParent<Projectile>() == null) return;
 
         isDown = true;
+        OnDown?.Invoke(this);   // 倒れたことを放送する
         rb.isKinematic = false;   // ここで初めて物理が効き始める
 
         // 球の進行方向 ≒ -relativeVelocity
