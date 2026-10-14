@@ -47,7 +47,7 @@ public class ScoreManager : MonoBehaviour
 
     void HandleTargetDown(Target target)
     {
-        AddScore(target.ScoreValue);
+        AddScore(target.Points);
     }
 
     /// <summary>

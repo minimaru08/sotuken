@@ -14,6 +14,9 @@ public class Shooter : MonoBehaviour
     [SerializeField] float shootSpeed = 8f;        // 球の初速(メートル/秒)
     [SerializeField] float fireInterval = 0.2f;    // 連射の最短間隔(秒)
     [SerializeField] bool debugLog = true;         // 発射時に位置と向きをConsoleへ出すか
+    [Header("効果音")]
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip shootClip;
 
     // 最後に撃った時刻。連射制限の判定に使う。
     // -999 という大きな負の値にしておくと、ゲーム開始直後の1発目が
@@ -28,6 +31,7 @@ public class Shooter : MonoBehaviour
         // Inspectorでカメラを入れ忘れていたら、MainCameraタグの付いた
         // カメラを自動で探して入れる(保険)
         if (arCamera == null) arCamera = Camera.main;
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -117,6 +121,8 @@ public class Shooter : MonoBehaviour
         // Prefabから実体を作る。回転はカメラと揃えておくと、
         // 模様や形のあるモデルを使ったときに向きが自然になる。
         GameObject ball = Instantiate(projectilePrefab, spawnPos, cam.rotation);
+        if (audioSource != null && shootClip != null)
+            audioSource.PlayOneShot(shootClip);
 
         // Rigidbody があれば速度を直接与えて飛ばす。
         // TryGetComponent は「あれば true を返して rb に入れる」という書き方で、

@@ -97,6 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Target
   knockForce: 1.5
   despawnDelay: 4
+  scoreValue: 100
 --- !u!1 &8893972713424787638
 GameObject:
   m_ObjectHideFlags: 0
