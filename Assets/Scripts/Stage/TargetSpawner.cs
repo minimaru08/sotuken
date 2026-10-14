@@ -15,8 +15,17 @@ public class TargetSpawner : MonoBehaviour
     [Header("ウェーブ")]
     [SerializeField] int baseCount = 3;          // ウェーブ1の的の数
     [SerializeField] int addPerWave = 1;         // 1ウェーブごとに増える数
-    [SerializeField] int maxWave = 10;          //  ウェーブの数の上限
+    [SerializeField] int maxTargetCount = 10;          //  ウェーブの数の上限
     [SerializeField] float waveInterval = 2f;    // 全滅してから次が出るまでの待ち時間
+
+    [Header("障害物")]
+    [SerializeField] GameObject obstaclePrefab;
+    [SerializeField] int obstacleCount = 2;              // 1ウェーブに置く数
+    [SerializeField] float obstacleDistanceRatio = 0.6f; // 的までの何割の位置に置くか
+    [SerializeField] float obstacleSpread = 1.0f;        // 横の広がり
+
+    // 今出ている障害物。次のウェーブで片付けるために持っておく
+    readonly List<GameObject> obstacles = new List<GameObject>();
 
     [Header("タイミング")]
     [SerializeField] float startDelay = 1.5f;    // ARのトラッキングが安定するまで待つ
@@ -72,7 +81,7 @@ public class TargetSpawner : MonoBehaviour
         WaveNumber++;
 
         // ウェーブが進むほど的を増やす(上限あり)
-        int count = Mathf.Min(baseCount + (WaveNumber - 1) * addPerWave, maxWave);
+        int count = Mathf.Min(baseCount + (WaveNumber - 1) * addPerWave, maxTargetCount);
 
         Transform cam = arCamera.transform;
 
@@ -103,7 +112,36 @@ public class TargetSpawner : MonoBehaviour
             // 全滅判定に使うので記録しておく
             alive.Add(target);
         }
+        SpawnObstacles(cam.position, forward, right);
 
         Debug.Log($"[TargetSpawner] ウェーブ {WaveNumber}: 的を {count} 個生成");
+    }
+    void SpawnObstacles(Vector3 camPos, Vector3 forward, Vector3 right)
+    {
+        // 前のウェーブの障害物を片付ける。
+        // 的と違って撃っても消えないので、明示的に消す必要がある
+        foreach (GameObject o in obstacles)
+            if (o != null) Destroy(o);
+        obstacles.Clear();
+
+        if (obstaclePrefab == null || obstacleCount <= 0) return;
+
+        // 的より手前に置く
+        float d = distance * obstacleDistanceRatio;
+
+        for (int i = 0; i < obstacleCount; i++)
+        {
+            float t = obstacleCount == 1 ? 0f : (i / (float)(obstacleCount - 1)) * 2f - 1f;
+
+            Vector3 pos = camPos
+                        + forward * d
+                        + right * (t * obstacleSpread)
+                        + Vector3.up * Random.Range(-0.2f, 0.2f);
+
+            GameObject obs = Instantiate(
+                obstaclePrefab, pos, Quaternion.LookRotation(-forward, Vector3.up));
+
+            obstacles.Add(obs);
+        }
     }
 }
